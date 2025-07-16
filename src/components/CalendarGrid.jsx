@@ -105,11 +105,25 @@ const CalendarGrid = () => {
             minWidth: `${gridWidth}px`,
             borderBottom: '1px solid #ddd',
             boxSizing: 'border-box',
+            height: '60px',
           }}
         >
-          <div className="empty-time-cell"></div>
+          <div className="empty-time-cell" style={{ height: '60px' }}></div>
           {days.map((day, i) => (
-            <div key={i} className="day-column-header">{day.label}</div>
+            <div
+              key={i}
+              className="day-column-header"
+              style={{
+                height: '60px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 'bold',
+                fontSize: '14px',
+              }}
+            >
+              {day.label}
+            </div>
           ))}
         </div>
 
@@ -127,7 +141,7 @@ const CalendarGrid = () => {
               className="time-label"
               style={{
                 borderBottom: '1px solid #ddd',
-                height: '140px',
+                height: '120px',
                 display: 'flex',
                 alignItems: 'center',
               }}
@@ -140,7 +154,7 @@ const CalendarGrid = () => {
               const attendees = attendeesMap[key];
 
               return (
-                <div className="grid-cell" key={col} style={{ position: 'relative', height: '140px' }}>
+                <div className="grid-cell" key={col} style={{ position: 'relative', height: '120px' }}>
                   {attendees && currentMonth === 0 && (
                     <AppointmentCard
                       name="Ajay Pal"
@@ -198,7 +212,7 @@ const CalendarGrid = () => {
             position: 'absolute',
             top:
               selected.row >= 2
-                ? popupPosition.top - 310
+                ? popupPosition.top - 290
                 : popupPosition.top + popupPosition.height + 10,
             left:
               ['05', '06', '07'].includes(selected.dayNum)
