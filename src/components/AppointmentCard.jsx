@@ -7,8 +7,8 @@ const AppointmentCard = ({
   time,
   avatar,
   attendees = [],
-  onClick,        
-  onAvatarClick,  
+  onClick,
+  onAvatarClick,
 }) => {
   const resolvedAvatar = avatar || '/images/pic4.jpg';
 
@@ -25,10 +25,10 @@ const AppointmentCard = ({
   return (
     <div
       className="appointment-wrapper"
-      onClick={onClick}
       style={{ cursor: 'pointer', position: 'relative' }}
     >
-      <div className={`appointment-card ${colorClass}`}>
+      {/* ✅ Move onClick here */}
+      <div className={`appointment-card ${colorClass}`} onClick={onClick}>
         <div className="appointment-header">
           <img
             src={resolvedAvatar}
@@ -45,7 +45,7 @@ const AppointmentCard = ({
         <div
           className="attendee-icons"
           onClick={(e) => {
-            e.stopPropagation(); 
+            e.stopPropagation(); // prevent click from triggering card onClick
           }}
         >
           {attendees.map((src, index) => (

@@ -6,8 +6,9 @@ import '../styles/appointments.css';
 
 const CalendarGrid = () => {
   const [selected, setSelected] = useState(null);
+  const [popupPosition, setPopupPosition] = useState(null);
   const [schedulePopup, setSchedulePopup] = useState(null);
-  const [currentMonth, setCurrentMonth] = useState(0); // 0 = January
+  const [currentMonth, setCurrentMonth] = useState(0);
 
   const times = ['9:00 A.M.', '10:00 A.M.', '11:00 A.M.', '12:00 P.M.'];
 
@@ -18,7 +19,7 @@ const CalendarGrid = () => {
     while (date.getMonth() === monthIndex) {
       const weekday = date.toLocaleString('en-US', { weekday: 'short' }).toUpperCase();
       const dayNum = date.getDate().toString().padStart(2, '0');
-      days.push(`${weekday} ${dayNum}`);
+      days.push({ label: `${weekday} ${dayNum}`, dayNum });
       date.setDate(date.getDate() + 1);
     }
     return days;
@@ -63,6 +64,7 @@ const CalendarGrid = () => {
       return prev;
     });
     setSelected(null);
+    setPopupPosition(null);
     setSchedulePopup(null);
   };
 
@@ -70,7 +72,6 @@ const CalendarGrid = () => {
 
   return (
     <>
-      {/* Summary Header with Month Slider */}
       <div className="calendar-summary-bar">
         <h2 className="calendar-title">Scheduled Appointments</h2>
         <div className="month-slider">
@@ -92,22 +93,23 @@ const CalendarGrid = () => {
         </div>
       </div>
 
-      {/* Calendar Grid */}
       <div
         className="calendar-grid"
-        style={{ overflowX: 'auto', minWidth: `${gridWidth}px` }}
+        style={{ overflowX: 'auto', minWidth: `${gridWidth}px`, position: 'relative' }}
       >
         <div
           className="grid-header"
           style={{
             display: 'grid',
             gridTemplateColumns: `100px repeat(${days.length}, 180px)`,
-            minWidth: `${gridWidth}px`
+            minWidth: `${gridWidth}px`,
+            borderBottom: '1px solid #ddd',
+            boxSizing: 'border-box',
           }}
         >
           <div className="empty-time-cell"></div>
           {days.map((day, i) => (
-            <div key={i} className="day-column-header">{day}</div>
+            <div key={i} className="day-column-header">{day.label}</div>
           ))}
         </div>
 
@@ -121,58 +123,47 @@ const CalendarGrid = () => {
               minWidth: `${gridWidth}px`
             }}
           >
-            <div className="time-label">{time}</div>
-            {days.map((_, col) => {
+            <div
+              className="time-label"
+              style={{
+                borderBottom: '1px solid #ddd',
+                height: '140px',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              {time}
+            </div>
+
+            {days.map(({ dayNum }, col) => {
               const key = `${col}-${row}`;
               const attendees = attendeesMap[key];
-              const isSelected = selected?.row === row && selected?.col === col;
 
               return (
-               
-                <div
-  className="grid-cell"
-  key={col}
-  style={{
-    position: 'relative',
-    height: '140px',
-    maxHeight: '140px',
-    minHeight: '140px',
-    borderBottom: '1px solid #ddd', // 👈 This adds a horizontal line
-    boxSizing: 'border-box',
-  }}
->
-
-
+                <div className="grid-cell" key={col} style={{ position: 'relative', height: '140px' }}>
                   {attendees && currentMonth === 0 && (
-                    <>
-                      <AppointmentCard
-                        name="Ajay Pal"
-                        condition="Fever"
-                        time={`${time} - ${getEndTime(time)}`}
-                        avatar="/images/pic4.jpg"
-                        attendees={attendees}
-                        onClick={() => {
-                          setSelected({ row, col });
-                          setSchedulePopup(null);
-                        }}
-                        onAvatarClick={() => {
-                          setSchedulePopup({ row, col, time });
-                          setSelected(null);
-                        }}
-                      />
-                      {isSelected && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            [col <= 3 ? 'left' : 'right']: '105%',
-                            [row >= 2 ? 'bottom' : 'top']: '0',
-                            zIndex: 20,
-                          }}
-                        >
-                          <PopUp onClose={() => setSelected(null)} />
-                        </div>
-                      )}
-                    </>
+                    <AppointmentCard
+                      name="Ajay Pal"
+                      condition="Fever"
+                      time={`${time} - ${getEndTime(time)}`}
+                      avatar="/images/pic4.jpg"
+                      attendees={attendees}
+                      onClick={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        setSelected({ row, col, dayNum });
+                        setPopupPosition({
+                          top: rect.top + window.scrollY,
+                          left: rect.left + window.scrollX,
+                          width: rect.width,
+                          height: rect.height,
+                        });
+                        setSchedulePopup(null);
+                      }}
+                      onAvatarClick={() => {
+                        setSchedulePopup({ row, col, time });
+                        setSelected(null);
+                      }}
+                    />
                   )}
                 </div>
               );
@@ -181,7 +172,6 @@ const CalendarGrid = () => {
         ))}
       </div>
 
-      {/* Slide-in Schedule PopUp */}
       {schedulePopup && (
         <div
           style={{
@@ -192,13 +182,32 @@ const CalendarGrid = () => {
             height: '100vh',
             backgroundColor: '#fff',
             boxShadow: '-2px 0 10px rgba(0,0,0,0.1)',
-            zIndex: 100,
+            zIndex: 10000,
           }}
         >
           <SchedulePopUp
             onClose={() => setSchedulePopup(null)}
             time={`${schedulePopup.time} - ${getEndTime(schedulePopup.time)}`}
           />
+        </div>
+      )}
+
+      {selected && popupPosition && (
+        <div
+          style={{
+            position: 'absolute',
+            top:
+              selected.row >= 2
+                ? popupPosition.top - 310
+                : popupPosition.top + popupPosition.height + 10,
+            left:
+              ['05', '06', '07'].includes(selected.dayNum)
+                ? popupPosition.left - 330
+                : popupPosition.left + popupPosition.width + 10,
+            zIndex: 9999,
+          }}
+        >
+          <PopUp onClose={() => setSelected(null)} />
         </div>
       )}
     </>

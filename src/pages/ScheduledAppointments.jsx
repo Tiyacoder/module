@@ -11,8 +11,7 @@ const ScheduledAppointments = () => {
       <div className="appointments-main">
         <CalendarHeader />
 
-      
-
+       
         <CalendarGrid />
       </div>
     </div>
