@@ -11,14 +11,7 @@ const ScheduledAppointments = () => {
       <div className="appointments-main">
         <CalendarHeader />
 
-        <div className="calendar-summary-bar">
-          <h2 className="calendar-title">Scheduled Appointments</h2>
-          <div className="month-slider">
-            <button className="month-nav">{'<'}</button>
-            <span className="month-label">June 2025</span>
-            <button className="month-nav">{'>'}</button>
-          </div>
-        </div>
+      
 
         <CalendarGrid />
       </div>
