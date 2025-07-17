@@ -247,16 +247,13 @@ html, body {
 .calendar-grid {
   background: white;
   border-radius: 10px;
-  overflow-x: auto;
-  overflow-y: visible;  /* <- important */
-  position: relative;    /* <- enables absolute children to layer above */
-  z-index: 1;            /* <- base layer */
+  overflow-x: auto;     /* Enable horizontal scroll */
+  overflow-y: hidden;
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 0; /* Remove any internal vertical spacing */
 }
-
 .grid-header {
   margin-bottom: 0;
   padding-bottom: 0;
