@@ -71,13 +71,12 @@ const CalendarGrid = () => {
       attendeesMap[key] = attendees;
     }
     
-    // Add specific afternoon appointments (2-6 PM = indices 5-9)
-    const afternoonSlots = [5, 6, 7, 8, 9]; // 2PM, 3PM, 4PM, 5PM, 6PM
-    for (let i = 0; i < 3; i++) { // Add 3 afternoon appointments
+    const afternoonSlots = [5, 6, 7, 8, 9]; 
+    for (let i = 0; i < 3; i++) { 
       const dayIndex = (seed + i * 2) % 7;
       const timeIndex = afternoonSlots[(seed + i) % afternoonSlots.length];
       const key = `${dayIndex}-${timeIndex}`;
-      if (!attendeesMap[key]) { // Only add if slot is not already occupied
+      if (!attendeesMap[key]) { 
         const attendeeCount = 1 + ((seed + i * 2) % 3);
         const attendees = [];
         for (let j = 0; j < attendeeCount; j++) {
